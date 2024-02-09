@@ -1,4 +1,5 @@
 import Loading from "../Loading/loading";
+// @ts-expect-error some bugs in get data from axios type
 import customAxios from "../axios";
 import { useEffect, useState } from "react";
 
@@ -20,7 +21,7 @@ const CategoryList = () => {
 
   const renderContent = () => {
     if (loading) {
-      return <Loading />;
+      return <Loading theme="primary" />;
     }
 
     return (
