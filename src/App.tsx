@@ -1,68 +1,59 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import "./App.css";
 import CategoryList from "./CategoryList/categoryList";
 import Header from "./Header/header";
-// @ts-expect-error some bugs in get data from axios type
-import axios from "./axios";
 import Loading from "./Loading/loading";
 import FastFoodList from "./FastFoodList/fastFoodList";
-import { IFoodItem } from "./data";
 import SearchBar from "./SearchBar/searchBar";
-import notFound from './assets/images/404.png'
-
+import notFound from "./assets/images/404.png";
+import useAxios from "./hooks/useAxios";
 
 function App() {
-  const [loading, setLoading] = useState(false);
 
-  const [fastFoodItem, setFastFoodItem] = useState<IFoodItem[]>([]);
+  const [url, setUrl] = useState("/FastFood/list");
 
-  const fetchData = async (categoryId: string | null = null) => {
-    setLoading(true);
-    const response = await axios.get(
-      `/FastFood/list/${categoryId ? "?categoryId=" + categoryId : ""}`
-    );
+  const {
+    response: fastFoodItem,
+    error,
+    loading,
+  } = useAxios({
+    url,
+  });
 
-    setLoading(false);
-    setFastFoodItem(response.data);
+  const filterItems = (categoryId?: string) => {
+    setUrl(`/FastFood/list/${categoryId ? "?categoryId=" + categoryId : ""}`);
   };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  const searchItems = async (term?: string) => {
+    setUrl(`/FastFood/search/${term ? "?term=" + term : ""}`);
+  };
 
   const renderContent = () => {
     if (loading) {
       return <Loading />;
     }
+
+    if (error) {
+      console.log(error);
+    }
     if (fastFoodItem.length === 0) {
-      return(<>
-      <div className="alert alert-warning text-center">
-          برای کلید واژه فوق هیچ آیتمی یافت نشد
-      </div>
-      <img className="mx-auto  mt-5 d-flex fade-in-horiz" src={notFound} />
-      </>)
+      return (
+        <>
+          <div className="alert alert-warning text-center">
+            برای کلید واژه فوق هیچ آیتمی یافت نشد
+          </div>
+          <img className="mx-auto  mt-5 d-flex fade-in-horiz" src={notFound} />
+        </>
+      );
     }
 
     return <FastFoodList fastFoodItems={fastFoodItem} />;
   };
 
-  const filterItems = (categoryId?: string) => {
-    fetchData(categoryId);
-  };
-
-  const searchItems = async (term?: string) => {
-    setLoading(true);
-    const response = await axios.get(
-      `/FastFood/search/${term ? "?term=" +term : ""}`
-    )
-    setLoading(false)
-    setFastFoodItem(response.data)
-  }
-
   return (
     <div className="wrapper bg-faded-dark">
       <Header />
-      <CategoryList filterItems={filterItems} >
+      <CategoryList filterItems={filterItems}>
         <SearchBar searchItems={searchItems} />
       </CategoryList>
       <div className="container mt-4">{renderContent()}</div>

@@ -1,34 +1,29 @@
 import Loading from "../Loading/loading";
-// @ts-expect-error some bugs in get data from axios type
-import customAxios from "../axios";
-import { FC, useEffect, useState } from "react";
+import { FC } from "react";
+import useAxios from "../hooks/useAxios";
 
 interface ICategoryListProps {
   filterItems: (categoryId?: string) => void;
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
-const CategoryList: FC<ICategoryListProps> = ({ filterItems , children}) => {
-  const [loading, setLoading] = useState(true);
-  const [categories, setCatgories] = useState([]);
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      const response = await customAxios.get("/FoodCategory/categories");
-
-      setCatgories(response.data);
-      setLoading(false);
-      // console.log(response);
-    };
-
-    fetchCategories();
-  }, []);
+const CategoryList: FC<ICategoryListProps> = ({ filterItems, children }) => {
+  const {
+    response: categories,
+    error,
+    loading,
+  } = useAxios({
+    method: "GET",
+    url: "/FoodCategory/categories",
+  });
 
   const renderContent = () => {
     if (loading) {
       return <Loading theme="primary" />;
     }
-
+    if (error) {
+      console.log(error);
+    }
     return (
       <div className="ps-3 w-100 d-flex align-items-center justify-content-between gap-5">
         <ul className="nav">
