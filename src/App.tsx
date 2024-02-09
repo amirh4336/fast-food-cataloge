@@ -13,7 +13,7 @@ function App() {
 
   const [fastFoodItem, setFastFoodItem] = useState<IFoodItem[]>([]);
 
-  const fetchData = async (categoryId = null) => {
+  const fetchData = async (categoryId: string | null = null) => {
     setLoading(true);
     const response = await axios.get(
       `/FastFood/list/${categoryId ? "?categoryId=" + categoryId : ""}`
@@ -34,10 +34,14 @@ function App() {
     return <FastFoodList fastFoodItems={fastFoodItem} />;
   };
 
+  const filterItems = (categoryId?: string) => {
+    fetchData(categoryId);
+  };
+
   return (
     <div className="wrapper bg-faded-dark">
       <Header />
-      <CategoryList />
+      <CategoryList filterItems={filterItems} />
       <div className="container mt-4">{renderContent()}</div>
     </div>
   );
