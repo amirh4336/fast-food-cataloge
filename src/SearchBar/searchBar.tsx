@@ -1,13 +1,16 @@
-import { FormEvent, useState } from "react";
+import { FC, FormEvent, useState } from "react";
 import { BsSearch } from "react-icons/bs";
 
-const SearchBar = () => {
+interface ISearchBarProps {
+  searchItems: (term?: string) => Promise<void>;
+}
+
+const SearchBar: FC<ISearchBarProps> = ({ searchItems }) => {
   const [value, setValue] = useState("");
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
-    const target = e.target as HTMLInputElement;
-    setValue(target.value);
+    searchItems(value);
   };
 
   return (

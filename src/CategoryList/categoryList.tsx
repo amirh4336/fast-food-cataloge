@@ -1,14 +1,14 @@
 import Loading from "../Loading/loading";
-import SearchBar from "../SearchBar/searchBar";
 // @ts-expect-error some bugs in get data from axios type
 import customAxios from "../axios";
 import { FC, useEffect, useState } from "react";
 
 interface ICategoryListProps {
   filterItems: (categoryId?: string) => void;
+  children: React.ReactNode
 }
 
-const CategoryList: FC<ICategoryListProps> = ({ filterItems }) => {
+const CategoryList: FC<ICategoryListProps> = ({ filterItems , children}) => {
   const [loading, setLoading] = useState(true);
   const [categories, setCatgories] = useState([]);
 
@@ -49,7 +49,7 @@ const CategoryList: FC<ICategoryListProps> = ({ filterItems }) => {
             </li>
           ))}
         </ul>
-        <SearchBar />
+        {children}
       </div>
     );
   };
